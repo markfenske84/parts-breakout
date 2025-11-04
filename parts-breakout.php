@@ -12,29 +12,27 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
-// Include the Plugin Update Checker library (either via Composer autoload or manual copy).
-if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
-    require_once __DIR__ . '/vendor/autoload.php';
-} elseif ( file_exists( __DIR__ . '/plugin-update-checker/plugin-update-checker.php' ) ) {
-    require_once __DIR__ . '/plugin-update-checker/plugin-update-checker.php';
-}
+// Initialize Plugin Update Checker
+require_once __DIR__ . '/plugin-update-checker/plugin-update-checker.php';
+use YahnisElsts\PluginUpdateChecker\v5p4\PucFactory;
+
+$partsBreakoutUpdateChecker = PucFactory::buildUpdateChecker(
+    'https://github.com/markfenske84/parts-breakout',
+    __FILE__,
+    'parts-breakout'
+);
+
+// Set the branch to check for updates
+$partsBreakoutUpdateChecker->setBranch( 'main' );
 
 class Parts_Breakout_Plugin {
 
     const CPT = 'parts-breakout';
 
-    /**
-     * Instance of the Plugin Update Checker.
-     *
-     * @var object|null
-     */
-    private $update_checker;
-
     public function __construct() {
         add_action( 'init', [ $this, 'register_cpt' ] );
         add_filter( 'single_template', [ $this, 'load_single_template' ] );
         add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_assets' ] );
-        add_action( 'init', [ $this, 'setup_updater' ] );
         
         // Admin meta boxes
         add_action( 'add_meta_boxes', [ $this, 'add_meta_boxes' ] );
@@ -717,27 +715,6 @@ class Parts_Breakout_Plugin {
         update_post_meta( $post_id, '_parts_breakout_parts', $parts );
 
         return rest_ensure_response( [ 'success' => true ] );
-    }
-
-    /**
-     * Sets up the automatic update checker for the plugin.
-     *
-     * Uses Yahnis Elsts' Plugin Update Checker library. Make sure the library
-     * is available either via Composer (preferred) or by copying it to
-     * `plugin-update-checker/` inside this plugin directory.
-     *
-     * @return void
-     */
-    public function setup_updater() {
-        $repo_url = 'https://github.com/yourusername/parts-breakout'; // TODO: replace with actual repository URL.
-
-        if ( class_exists( 'Puc_v5_Factory' ) ) {
-            $this->update_checker = Puc_v5_Factory::buildUpdateChecker( $repo_url, __FILE__, 'parts-breakout' );
-            $this->update_checker->setBranch( 'main' );
-        } elseif ( class_exists( 'Puc_v4_Factory' ) ) {
-            $this->update_checker = Puc_v4_Factory::buildUpdateChecker( $repo_url, __FILE__, 'parts-breakout' );
-            $this->update_checker->setBranch( 'main' );
-        }
     }
 }
 
