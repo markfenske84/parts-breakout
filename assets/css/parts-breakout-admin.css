@@ -1,0 +1,90 @@
+/* Parts Breakout Admin Styles */
+
+#parts-breakout-repeater {
+    padding: 10px 0;
+}
+
+#parts-list {
+    margin-bottom: 20px;
+}
+
+.part-row {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.part-row-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    cursor: move;
+}
+
+.part-row-header h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.part-row .form-table {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 3px;
+}
+
+.part-row .form-table th {
+    width: 150px;
+    padding: 15px 10px 15px 15px;
+    vertical-align: top;
+}
+
+.part-row .form-table td {
+    padding: 15px 15px 15px 10px;
+}
+
+.part-image-preview {
+    margin-bottom: 10px;
+}
+
+.part-image-preview img {
+    display: block;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+.remove-part-btn {
+    color: #a00;
+}
+
+.remove-part-btn:hover {
+    color: #dc3232;
+}
+
+.remove-part-image {
+    margin-left: 5px;
+    color: #a00;
+}
+
+.remove-part-image:hover {
+    color: #dc3232;
+}
+
+/* Sortable indicator */
+.ui-sortable-helper {
+    opacity: 0.7;
+}
+
+.ui-sortable-placeholder {
+    background: #f0f0f1;
+    border: 2px dashed #c3c4c7;
+    visibility: visible !important;
+    height: 100px;
+    margin-bottom: 15px;
+}
+

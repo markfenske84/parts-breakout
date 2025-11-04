@@ -1,0 +1,932 @@
+.parts-breakout-article {
+  padding: 3rem 1rem 0;
+}
+
+.parts-breakout-wrapper {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Parts Breakout Selector Dropdown */
+.parts-breakout-selector {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  backdrop-filter: blur(8px);
+}
+
+.parts-selector-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.parts-breakout-dropdown {
+  min-width: 200px;
+  padding: 8px 32px 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"><path fill="%23333" d="M1.41 0L6 4.58 10.59 0 12 1.41l-6 6-6-6z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+}
+
+.parts-breakout-dropdown:hover {
+  border-color: #0073aa;
+  box-shadow: 0 0 0 2px rgba(0, 115, 170, 0.1);
+}
+
+.parts-breakout-dropdown:focus {
+  outline: none;
+  border-color: #0073aa;
+  box-shadow: 0 0 0 3px rgba(0, 115, 170, 0.2);
+}
+
+/* Mobile selector positioning */
+@media (max-width: 767px) {
+  .parts-breakout-wrapper {
+    flex-direction: column;
+  }
+  
+  .parts-breakout-selector {
+    position: static;
+    width: 100%;
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    order: -1; /* Ensure it appears before the image */
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+  }
+  
+  .parts-selector-label {
+    font-size: 14px;
+  }
+  
+  .parts-breakout-dropdown {
+    min-width: 150px;
+    font-size: 14px;
+    padding: 8px 32px 8px 12px;
+  }
+}
+
+.parts-breakout-main-image {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  pointer-events: none;
+}
+
+.part-hotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 2; /* Above lines (z-index: 1) */
+}
+
+/* Pulsating circle behind hotspot */
+.part-hotspot::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: var(--circle-color, #0073aa);
+  opacity: 0.3;
+  z-index: -2; /* Lower z-index so ::after can cover it on hover */
+  animation: pulsate 2s ease-in-out infinite;
+  animation-play-state: paused; /* Paused initially to sync all circles */
+}
+
+/* Start pulsating animation in sync after load-in completes */
+.parts-breakout-wrapper.pb-animations-ready .part-hotspot::before {
+  animation-play-state: running;
+}
+
+@keyframes pulsate {
+  0% {
+    transform: translate(-50%, -50%) scale(0.05);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.25);
+    opacity: 0;
+  }
+}
+
+/* Hide the pulsating animation on hover, but keep it running for sync */
+.parts-breakout-wrapper:not(.parts-editing) .part-hotspot:hover::before {
+  visibility: hidden; /* Hides the animation but keeps it running in the timeline */
+}
+
+/* Show static circle on hover instead */
+.parts-breakout-wrapper:not(.parts-editing) .part-hotspot:hover::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  width: 100px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: var(--circle-color, #0073aa);
+  opacity: 0.4; /* Match the visual appearance we want on hover */
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Disable pulsating circles in editor mode */
+.parts-breakout-wrapper.parts-editing .part-hotspot::before {
+  animation: none;
+  animation-play-state: paused; /* Override running state */
+  opacity: 0.2;
+}
+
+.part-hotspot-icon {
+  background: #ffffff;
+  border: 2px solid #333333;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  line-height: 22px;
+  text-align: center;
+  font-weight: 700;
+  color: #333333;
+  font-size: 18px;
+  display: inline-block;
+}
+
+.part-hotspot-image {
+  height: 100px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+}
+
+/* Tooltip */
+.part-tooltip {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -100%) translateY(-10px);
+  background: #ffffff;
+  border: 1px solid #cccccc;
+  padding: 12px;
+  width: 300px;
+  max-width: 600px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  display: none;
+  z-index: 10;
+}
+
+/* Remove tooltip arrow */
+.part-tooltip:after,
+.part-tooltip.below:after {
+  display: none !important;
+  content: none !important;
+  border: none !important;
+}
+
+/* Default orientation (above hotspot, arrow on bottom) */
+.part-tooltip:after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: calc(50% + var(--arrow-offset, 0px));
+  transform: translateX(-50%);
+  border-width: 6px 6px 0 6px;
+  border-style: solid;
+  border-color: #ffffff transparent transparent transparent;
+}
+
+/* Below orientation */
+.part-tooltip.below {
+  top: 100%;
+  bottom: auto;
+  transform: translate(-50%, 0) translateY(10px);
+}
+
+.part-tooltip.below:after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: calc(50% + var(--arrow-offset, 0px));
+  transform: translateX(-50%);
+  border-width: 0 6px 6px 6px;
+  border-style: solid;
+  border-color: transparent transparent #ffffff transparent;
+}
+
+.part-hotspot:hover .part-tooltip {
+  display: block;
+}
+
+/* Hide mobile list by default (desktop) */
+.parts-mobile-list {
+  display: none;
+}
+
+/* ------------------
+  Mobile Layout
+-------------------*/
+
+@media (max-width: 767px) {
+  /* Hide hotspot overlay and circles */
+  .part-hotspot,
+  .part-tooltip,
+  .part-hotspot::before {
+    display: none !important;
+  }
+
+  /* Hide guideline canvas and handles on mobile */
+  .parts-guidelines-canvas,
+  .parts-line-handle {
+    display: none !important;
+  }
+
+  /* Ensure wrapper is full width */
+  .parts-breakout-wrapper {
+    width: 100%;
+  }
+
+  .parts-mobile-list {
+    display: block;
+    margin-top: 24px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .part-mobile-image {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    /* margin-bottom: 12px; */
+  }
+
+  .part-mobile-content {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  /* Accordion */
+  .part-accordion-toggle {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0;
+    text-align: left;
+    font-size: 18px;
+    font-weight: 600;
+    position: relative;
+    cursor: pointer;
+  }
+
+  /* Hide plus/minus icon */
+  .part-accordion-toggle::after {
+    display: none;
+    content: none;
+  }
+
+  .part-accordion-content {
+    display: none;
+  }
+
+  .part-accordion-toggle[aria-expanded="true"] + .part-accordion-content {
+    display: block;
+    margin-top: 8px;
+  }
+
+  .part-mobile-title {
+    display: block;
+    margin-top: 8px;
+  }
+
+  .part-learn-more {
+    display: block;
+    font-size: 14px;
+    color: #555;
+  }
+  /* Hide desktop slide-out on mobile */
+  .parts-slideout-overlay {
+    display: none !important;
+  }
+}
+
+.part-tooltip-title {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* ----------------------------------
+   Desktop Enhancements (>=768px)
+-----------------------------------*/
+@media (min-width: 768px) {
+  /* Hide legacy tooltip that relied on :hover */
+  .part-tooltip {
+    display: none !important;
+  }
+
+  /* Cursor-follow tooltip */
+  .parts-hover-tooltip {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    padding: 10px 14px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    z-index: 10000;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .parts-hover-tooltip-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+  }
+
+  .parts-hover-tooltip-cta {
+    font-size: 14px;
+    color: #0073aa;
+  }
+
+  /* Slideout overlay */
+  .parts-slideout-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    z-index: 10003;
+  }
+
+  .parts-slideout-overlay.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Slideout panel */
+  .parts-slideout {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 80%;
+    max-width: 420px;
+    height: 100%;
+    background: #ffffff;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+    padding: 24px;
+  }
+
+  .parts-slideout-overlay.open .parts-slideout {
+    transform: translateX(0);
+  }
+
+  .parts-slideout-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    position: absolute;
+    top: 12px;
+    right: 16px;
+  }
+
+  .parts-slideout-content {
+    margin-top: 40px;
+  }
+
+  /* WordPress admin-bar adjustment */
+  body.admin-bar .parts-slideout {
+    top: 32px;
+    height: calc(100% - 32px);
+  }
+  @media (max-width: 782px) {
+    /* On small tablets WP admin bar is taller (46px) */
+    body.admin-bar .parts-slideout {
+      top: 46px;
+      height: calc(100% - 46px);
+    }
+  }
+}
+
+/* ----------------------------------
+   Admin Editing Helpers
+-----------------------------------*/
+.part-hotspot.parts-draggable {
+  cursor: move;
+}
+
+/* Admin edit wrapper dashed boundary */
+.parts-breakout-wrapper.parts-editing {
+  outline: 2px dashed #0073aa;
+}
+
+/* Position indicator label */
+.parts-position-indicator {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  pointer-events: none;
+  z-index: 10001;
+  display: none;
+}
+
+/* Guideline SVG overlay */
+.parts-guidelines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* allow clicks to pass through */
+  z-index: 1; /* Below hotspots (z-index: 2) so product images appear above lines */
+}
+
+.parts-guidelines line {
+  stroke: #0073aa;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Handle used to drag guideline end-point (visible in edit mode) */
+.parts-line-handle {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: #ffffff;
+  border: 2px solid #0073aa;
+  border-radius: 50%;
+  cursor: move;
+  z-index: 10002;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+/* Create-line button that appears on hotspot hover (edit mode only) */
+.parts-create-line-btn {
+  position: absolute;
+  right: -10px;
+  top: -10px;
+  width: 22px;
+  height: 22px;
+  background: #ffffff;
+  border: 1px solid #0073aa;
+  border-radius: 50%;
+  color: #0073aa;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+  padding: 0;
+  cursor: pointer;
+  display: none;
+  z-index: 4;
+}
+
+/* Only show the button when wrapper is in editing mode */
+.parts-breakout-wrapper.parts-editing .parts-create-line-btn {
+  display: block;
+}
+
+/* Visual cue while creating a new line */
+.parts-breakout-wrapper.parts-line-creating {
+  cursor: crosshair;
+}
+
+/* Canvas overlay for guidelines */
+.parts-guidelines-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* so clicks pass through */
+  z-index: 1; /* Below hotspots (z-index: 2) so product images appear above lines */
+} 
+
+/* =============================================================
+   Mobile Visual Enhancements (<=767px)
+   These overrides refine the appearance of the mobile accordion
+   list without changing any interactive behaviour handled in JS.
+   ============================================================= */
+@media (max-width: 767px) {
+  /* Container spacing */
+  .parts-mobile-list {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Each accordion block as a card */
+  .part-mobile-block {
+    background: #ffffff;
+    border: 1px solid #e4e4e4;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem; /* reduce gap slightly for compactness */
+    overflow: hidden; /* round image corners */
+  }
+
+  /* Entire toggle is now padded and flex aligned */
+  .part-accordion-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    padding: .5rem 1rem;
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* Improve tap target for image */
+  .part-mobile-image {
+    width: 64px;
+    height: 64px; /* ensure square */
+    object-fit: contain;
+    object-position: center;
+    margin-right: 0.5rem; /* spacing between image and text when flex gap is zero */
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  /* Title takes remaining space */
+  .part-mobile-title {
+    flex: 1 1 auto;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333333;
+    margin: 0;
+  }
+
+  /* subtle CTA text below title (optional) */
+  .part-learn-more {
+    display: none; /* remove Learn more text, now redundant with plus icon */
+  }
+
+  /* PLUS / MINUS indicator (overrides previous hide) */
+  .part-accordion-toggle::after {
+    content: "\002B"; /* plus sign */
+    display: inline-block;
+    font-size: 24px;
+    line-height: 1;
+    color: #0073aa;
+    /* transition: transform 0.25s ease; */
+    margin-left: auto;
+  }
+  .part-accordion-toggle[aria-expanded="true"]::after {
+    content: "\2212"; /* minus sign */
+  }
+
+  /* Accordion content styling */
+  .part-accordion-content {
+    padding: 0 16px 16px 16px;
+    font-size: 15px;
+    line-height: 1.6;
+    background: #fff;
+  }
+
+  /* Simple fade/slide animation */
+  @keyframes pbFadeSlide {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .part-accordion-toggle[aria-expanded="true"] + .part-accordion-content {
+    animation: pbFadeSlide 0.25s ease forwards; /* run only on open */
+  }
+} 
+
+/* -------------------------------------------------
+   Animated plus ➞ minus icon for mobile accordions
+   ------------------------------------------------- */
+@media (max-width: 767px) {
+  .part-accordion-toggle {
+    position: relative;
+    /* ensure right padding so icon doesn’t overlap text */
+    padding-right: 2.5rem;
+  }
+
+  /* Base styles for both horizontal and vertical lines */
+  .part-accordion-toggle::before,
+  .part-accordion-toggle::after {
+    content: "";
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    background: #0073aa;
+    border-radius: 1px;
+    /* transition: transform 0.25s ease; */
+  }
+
+  /* Horizontal line */
+  .part-accordion-toggle::before {
+    width: 16px;
+    height: 2px;
+    transform: translateY(-50%); /* centre vertically */
+  }
+
+  /* Vertical line – offset 8px left so its centre aligns with horizontal line centre */
+  .part-accordion-toggle::after {
+    width: 2px;
+    height: 16px;
+    transform: translate(-7px, -50%);
+    transform-origin: center; /* anchor for scale animation */
+  }
+
+  /* Opened (minus) state – shrink vertical line but keep X offset */
+  .part-accordion-toggle[aria-expanded="true"]::after {
+    transform: translate(-7px, -50%) scaleY(0);
+  }
+} 
+
+/* ------------------
+  Loading State
+----------------*/
+
+.parts-breakout-wrapper.pb-loading .parts-guidelines-canvas,
+.parts-breakout-wrapper.pb-loading .parts-line-handle {
+  visibility: hidden;
+}
+
+/* Ensure hotspots are invisible during loading so intro animation starts at 0 opacity */
+.parts-breakout-wrapper.pb-loading .part-hotspot {
+  opacity: 0;
+}
+
+/* Hide pulsating circles during loading */
+.parts-breakout-wrapper.pb-loading .part-hotspot::before {
+  display: none;
+}
+
+.pb-loading-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px; /* center */
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #0073aa;
+  border-radius: 50%;
+  animation: pbSpinner 1s linear infinite;
+  z-index: 5;
+}
+
+@keyframes pbSpinner {
+  to {
+    transform: rotate(360deg);
+  }
+} 
+
+/* Hover-enlarge part images for viewers (not in editor mode) */
+.parts-breakout-wrapper:not(.parts-editing) .part-hotspot img {
+  transition: all 0.3s ease-in-out;
+  transform: scale(1);
+}
+.parts-breakout-wrapper:not(.parts-editing) .part-hotspot:hover img {
+  transform: scale(1.15);
+} 
+
+/* -------------------------------------------
+   Editor delete (remove) button on hotspots
+---------------------------------------------*/
+.parts-breakout-wrapper.parts-editing .parts-remove-btn {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 22px;
+  height: 22px;
+  background: #ff4d4d;
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1; /* reset */
+  padding: 0;
+  cursor: pointer;
+  z-index: 3;
+}
+.parts-breakout-wrapper.parts-editing .parts-remove-btn:hover {
+  background: #d93636;
+} 
+
+/* -------------------------------------------
+   Editor add part (+) button
+---------------------------------------------*/
+.parts-breakout-wrapper.parts-editing .parts-add-part-btn {
+  position: absolute;
+  top: calc(100% + 1rem); /* below wrapper */
+  right: 0;
+  z-index: 4;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px; /* spacing between text and plus icon */
+  padding: 6px 14px; /* match .button-primary */
+  border-radius: 4px; /* match .button-primary */
+  font-size: 14px; /* consistent with modal buttons */
+}
+
+/* Hover state handled by .button-primary */
+
+.parts-add-part-btn .pb-plus-icon {
+  font-size: 20px;
+  line-height: 1;
+  display: inline-block;
+  position: relative;
+  top: -1px; /* adjust vertical alignment */
+}
+
+/* -------------------------------------------
+   Add Part form overlay
+---------------------------------------------*/
+.parts-add-form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.3);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 20000;
+}
+.parts-add-form-overlay.open { display: flex; }
+.parts-add-form {
+  background: #ffffff;
+  padding: 24px;
+  width: 600px;
+  max-width: 90%;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  position: relative;
+  z-index: 20001;
+}
+.parts-add-form h2 {
+  cursor: move;
+  user-select: none;
+}
+.parts-add-form label + label {
+  margin-top: 1rem;
+}
+.parts-add-form input[type="text"], .parts-add-form textarea {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 14px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+.parts-add-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+.button-primary {
+  background: #0073aa;
+  color: #ffffff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.button-primary:hover { background: #005f8d; } 
+
+.parts-add-form .tox {
+  width: 100%;
+} 
+.parts-add-form .tox .tox-editor-container {
+  width: 100%;
+}
+.parts-add-form .tox .tox-edit-area iframe {
+  width: 100% !important;
+} 
+
+.parts-add-form .tox .tox-tbtn--enabled {
+  color: #666666 !important; /* keep icon gray */
+}
+.parts-add-form .tox .tox-tbtn--enabled svg {
+  fill: currentColor !important;
+}
+
+/* Override legacy TinyMCE (pre-tox) active button colour */
+.parts-add-form .mce-btn.mce-active button,
+.parts-add-form .mce-btn.mce-active:hover button,
+.parts-add-form .mce-btn.mce-active i,
+.parts-add-form .mce-btn.mce-active:hover i {
+  color: #666 !important;
+  fill: #666 !important;
+}
+
+/* Hide add button on mobile */
+@media (max-width: 767px) {
+  .parts-add-part-btn {
+    display: none !important;
+  }
+} 
+
+/* Edit button pencil icon */
+.parts-edit-part-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto; /* align right when display:block */
+}
+.parts-edit-part-btn .pb-pencil-icon {
+  font-size: 16px;
+  line-height: 1;
+  position: relative;
+  display: inline-block;
+  margin-left: 3px;
+  transform: rotate(270deg);
+}
+
+/* CTA button in sidebar */
+.pb-cta-link {
+  display: block;
+  color: #fff;
+  background-color: #a92f2e;
+  border: 3px solid;
+  border-color: #a92f2e;
+  font-weight: 700;
+  padding: 14px 1rem;
+  margin: 27px 40px 27px 20px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+.pb-cta-link:hover {
+  background-color: #34488d;
+  border-color: #34488d;
+  color: #fff;
+} 
+
+.above-parts-content {
+  padding-bottom: 2rem;
+}
+.below-parts-content {
+  padding-top: 2rem;
+}
