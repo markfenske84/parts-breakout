@@ -3,7 +3,7 @@ Contributors: webfor
 Tags: interactive, parts, diagram, hotspots, images
 Requires at least: 5.0
 Tested up to: 6.8
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -66,6 +66,13 @@ Yes! Each parts breakout has settings for line color and circle color that you c
 
 == Changelog ==
 
+= 2.0.1 =
+* Fixed all WordPress.org Plugin Check errors and warnings
+* Added proper input sanitization and security improvements
+* Added GPL v2 license headers for WordPress.org compliance
+* Updated to WordPress 6.8 compatibility
+* Improved readme.txt formatting and documentation
+
 = 2.0.0 =
 * Complete rewrite with modern architecture
 * Added frontend drag-and-drop editing
@@ -77,6 +84,9 @@ Yes! Each parts breakout has settings for line color and circle color that you c
 * Improved performance and code organization
 
 == Upgrade Notice ==
+
+= 2.0.1 =
+Security and compatibility improvements. Recommended update for all users.
 
 = 2.0.0 =
 Major update with new features including frontend editing and mobile responsiveness. Please test on a staging site first.

@@ -2,7 +2,7 @@
 /*
 Plugin Name: Parts Breakout
 Description: Provides the Parts Breakout custom post type with interactive parts hotspots on images.
-Version: 2.0.0
+Version: 2.0.1
 Author: Webfor
 Author URI: https://webfor.com
 License: GPL v2 or later
