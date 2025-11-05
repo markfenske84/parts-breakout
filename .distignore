@@ -1,0 +1,26 @@
+# Ignore plugin update checker for WordPress.org submissions
+plugin-update-checker/
+
+# Development files
+.git/
+.gitignore
+.github/
+.distignore
+.DS_Store
+Thumbs.db
+
+# Development and build files
+node_modules/
+package.json
+package-lock.json
+composer.json
+composer.lock
+webpack.config.js
+gulpfile.js
+
+# Documentation for developers
+README.md
+DOCUMENTATION.md
+
+# Keep readme.txt for WordPress.org
+

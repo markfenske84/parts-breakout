@@ -4,26 +4,31 @@ Plugin Name: Parts Breakout
 Description: Provides the Parts Breakout custom post type with interactive parts hotspots on images.
 Version: 2.0.0
 Author: Webfor
+Author URI: https://webfor.com
+License: GPL v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: parts-breakout
-Update URI: https://github.com/markfenske84/parts-breakout
+Update URI: false
 */
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly.
 }
 
-// Initialize Plugin Update Checker
-require_once __DIR__ . '/plugin-update-checker/plugin-update-checker.php';
-use YahnisElsts\PluginUpdateChecker\v5p4\PucFactory;
+// Initialize Plugin Update Checker (only for non-WordPress.org installations)
+// This is disabled for WordPress.org plugin directory submissions
+if ( ! defined( 'PARTS_BREAKOUT_DISABLE_UPDATES' ) && file_exists( __DIR__ . '/plugin-update-checker/plugin-update-checker.php' ) ) {
+    require_once __DIR__ . '/plugin-update-checker/plugin-update-checker.php';
+    
+    $partsBreakoutUpdateChecker = YahnisElsts\PluginUpdateChecker\v5p4\PucFactory::buildUpdateChecker(
+        'https://github.com/markfenske84/parts-breakout',
+        __FILE__,
+        'parts-breakout'
+    );
 
-$partsBreakoutUpdateChecker = PucFactory::buildUpdateChecker(
-    'https://github.com/markfenske84/parts-breakout',
-    __FILE__,
-    'parts-breakout'
-);
-
-// Set the branch to check for updates
-$partsBreakoutUpdateChecker->setBranch( 'main' );
+    // Set the branch to check for updates
+    $partsBreakoutUpdateChecker->setBranch( 'main' );
+}
 
 class Parts_Breakout_Plugin {
 
@@ -341,26 +346,28 @@ class Parts_Breakout_Plugin {
         }
 
         // Save settings
-        if ( isset( $_POST['parts_breakout_settings_nonce'] ) && wp_verify_nonce( $_POST['parts_breakout_settings_nonce'], 'parts_breakout_settings' ) ) {
+        if ( isset( $_POST['parts_breakout_settings_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['parts_breakout_settings_nonce'] ) ), 'parts_breakout_settings' ) ) {
             if ( isset( $_POST['parts_line_color'] ) ) {
-                update_post_meta( $post_id, '_parts_line_color', sanitize_hex_color( $_POST['parts_line_color'] ) );
+                update_post_meta( $post_id, '_parts_line_color', sanitize_hex_color( wp_unslash( $_POST['parts_line_color'] ) ) );
             }
             if ( isset( $_POST['parts_circle_color'] ) ) {
-                update_post_meta( $post_id, '_parts_circle_color', sanitize_hex_color( $_POST['parts_circle_color'] ) );
+                update_post_meta( $post_id, '_parts_circle_color', sanitize_hex_color( wp_unslash( $_POST['parts_circle_color'] ) ) );
             }
             if ( isset( $_POST['parts_cta_label'] ) ) {
-                update_post_meta( $post_id, '_parts_cta_label', sanitize_text_field( $_POST['parts_cta_label'] ) );
+                update_post_meta( $post_id, '_parts_cta_label', sanitize_text_field( wp_unslash( $_POST['parts_cta_label'] ) ) );
             }
             if ( isset( $_POST['parts_cta_url'] ) ) {
-                update_post_meta( $post_id, '_parts_cta_url', esc_url_raw( $_POST['parts_cta_url'] ) );
+                update_post_meta( $post_id, '_parts_cta_url', esc_url_raw( wp_unslash( $_POST['parts_cta_url'] ) ) );
             }
         }
 
         // Save parts
-        if ( isset( $_POST['parts_breakout_parts_nonce'] ) && wp_verify_nonce( $_POST['parts_breakout_parts_nonce'], 'parts_breakout_parts' ) ) {
+        if ( isset( $_POST['parts_breakout_parts_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['parts_breakout_parts_nonce'] ) ), 'parts_breakout_parts' ) ) {
             $parts = [];
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Array elements are sanitized individually below.
             if ( isset( $_POST['parts'] ) && is_array( $_POST['parts'] ) ) {
-                foreach ( $_POST['parts'] as $part_data ) {
+                $parts_data = map_deep( wp_unslash( $_POST['parts'] ), 'sanitize_text_field' );
+                foreach ( $parts_data as $part_data ) {
                     $parts[] = [
                         'image_id' => isset( $part_data['image_id'] ) ? (int) $part_data['image_id'] : 0,
                         'title' => isset( $part_data['title'] ) ? sanitize_text_field( $part_data['title'] ) : '',
@@ -376,9 +383,9 @@ class Parts_Breakout_Plugin {
         }
 
         // Save below content
-        if ( isset( $_POST['parts_breakout_below_content_nonce'] ) && wp_verify_nonce( $_POST['parts_breakout_below_content_nonce'], 'parts_breakout_below_content' ) ) {
+        if ( isset( $_POST['parts_breakout_below_content_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['parts_breakout_below_content_nonce'] ) ), 'parts_breakout_below_content' ) ) {
             if ( isset( $_POST['parts_below_content'] ) ) {
-                update_post_meta( $post_id, '_parts_below_content', wp_kses_post( $_POST['parts_below_content'] ) );
+                update_post_meta( $post_id, '_parts_below_content', wp_kses_post( wp_unslash( $_POST['parts_below_content'] ) ) );
             }
         }
     }
